@@ -2,9 +2,15 @@
   "name": "@riddance/fetch",
   "version": "0.0.1",
   "type": "module",
-  "private": true,
+  "license": "MIT",
   "engines": {
     "node": ">=16"
+  },
+  "files": [
+    "*.js"
+  ],
+  "exports": {
+    ".": "./index.js"
   },
   "scripts": {
     "prepack": "node node_modules/@riddance/env/bin/build.js",
