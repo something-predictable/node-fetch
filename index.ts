@@ -37,7 +37,7 @@ export async function throwOnNotOK<
     return response
 }
 
-export function missing(what?: string) {
+export function missing(what?: string): never {
     throw new Error(what ? `Missing ${what}.` : 'Missing.')
 }
 
