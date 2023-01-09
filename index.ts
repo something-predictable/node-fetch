@@ -8,7 +8,7 @@ export async function fetchJson<T>(
     errorMessage: string,
     errorData?: { [key: string]: unknown },
 ) {
-    const response = await throwOnNotOK(await fetch(url, init), errorMessage, errorData)
+    const response = await throwOnNotOK(fetch(url, init), errorMessage, errorData)
     return (await response.json()) as T
 }
 
@@ -18,18 +18,19 @@ export async function fetchText(
     errorMessage: string,
     errorData?: { [key: string]: unknown },
 ) {
-    const response = await throwOnNotOK(await fetch(url, init), errorMessage, errorData)
+    const response = await throwOnNotOK(fetch(url, init), errorMessage, errorData)
     return await response.text()
 }
 
 export async function throwOnNotOK<
     T extends { ok?: boolean; status?: number; text?: () => Promise<string> },
->(response: T, message: string, data?: { [key: string]: unknown }) {
-    if (response.ok === false) {
+>(response: Promise<T> | T, message: string, data?: { [key: string]: unknown }) {
+    const r = await response
+    if (r.ok === false) {
         throw Object.assign(new Error(message), {
             response: {
-                status: response.status,
-                body: limitSize(await response.text?.()),
+                status: r.status,
+                body: limitSize(await r.text?.()),
             },
             ...data,
         })
