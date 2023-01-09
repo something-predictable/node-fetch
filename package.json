@@ -1,0 +1,15 @@
+{
+  "name": "@riddance/fetch",
+  "version": "0.0.1",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=16"
+  },
+  "scripts": {
+    "start": "watch"
+  },
+  "devDependencies": {
+    "@riddance/env": "0.2.4"
+  }
+}
