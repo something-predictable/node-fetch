@@ -1,10 +1,10 @@
-import fetch, { RequestInit } from 'node-fetch'
+import * as nf from 'node-fetch'
 
-export * from 'node-fetch'
+export const fetch = nf.default
 
 export async function fetchJson<T>(
     url: string,
-    init: RequestInit | undefined,
+    init: nf.RequestInit | undefined,
     errorMessage: string,
     errorData?: { [key: string]: unknown },
 ) {
@@ -14,7 +14,7 @@ export async function fetchJson<T>(
 
 export async function fetchText(
     url: string,
-    init: RequestInit | undefined,
+    init: nf.RequestInit | undefined,
     errorMessage: string,
     errorData?: { [key: string]: unknown },
 ) {
