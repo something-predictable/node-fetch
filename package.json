@@ -7,7 +7,11 @@
     "node": ">=16"
   },
   "scripts": {
+    "prepack": "node node_modules/@riddance/env/bin/build.js",
     "start": "watch"
+  },
+  "dependencies": {
+    "node-fetch": "3.3.0"
   },
   "devDependencies": {
     "@riddance/env": "0.2.4"
