@@ -1,25 +1,74 @@
 import * as nf from 'node-fetch'
 
 export const fetch = nf.default
+export type Response = nf.Response
 
-export async function fetchJson<T>(
+export async function fetchOK(
     url: string,
     init: nf.RequestInit | undefined,
     errorMessage: string,
     errorData?: { [key: string]: unknown },
 ) {
-    const response = await throwOnNotOK(fetch(url, init), errorMessage, errorData)
-    return (await response.json()) as T
+    await okResponse(fetch(url, init), errorMessage, errorData)
 }
 
-export async function fetchText(
+export function fetchJson<T>(
     url: string,
     init: nf.RequestInit | undefined,
     errorMessage: string,
     errorData?: { [key: string]: unknown },
 ) {
-    const response = await throwOnNotOK(fetch(url, init), errorMessage, errorData)
-    return await response.text()
+    return jsonResponse<T>(fetch(url, init), errorMessage, errorData)
+}
+
+export function fetchText(
+    url: string,
+    init: nf.RequestInit | undefined,
+    errorMessage: string,
+    errorData?: { [key: string]: unknown },
+) {
+    return textResponse(fetch(url, init), errorMessage, errorData)
+}
+
+export async function okResponse(
+    response: Promise<{
+        ok?: boolean
+        status?: number
+        text: () => Promise<string>
+        arrayBuffer?: () => Promise<unknown>
+    }>,
+    errorMessage: string,
+    errorData?: { [key: string]: unknown },
+) {
+    const r = await throwOnNotOK(response, errorMessage, errorData)
+    await (r.arrayBuffer ?? r.text)()
+}
+
+export async function jsonResponse<T>(
+    response: Promise<{
+        ok?: boolean
+        status?: number
+        text?: () => Promise<string>
+        json: () => Promise<unknown>
+    }>,
+    errorMessage: string,
+    errorData?: { [key: string]: unknown },
+) {
+    const r = await throwOnNotOK(response, errorMessage, errorData)
+    return (await r.json()) as T
+}
+
+export async function textResponse(
+    response: Promise<{
+        ok?: boolean
+        status?: number
+        text: () => Promise<string>
+    }>,
+    errorMessage: string,
+    errorData?: { [key: string]: unknown },
+) {
+    const r = await throwOnNotOK(response, errorMessage, errorData)
+    return await r.text()
 }
 
 export async function throwOnNotOK<
