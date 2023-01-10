@@ -18,7 +18,7 @@ export function fetchJson<T>(
     errorMessage: string,
     errorData?: { [key: string]: unknown },
 ) {
-    return jsonResponse<T>(fetch(url, init), errorMessage, errorData)
+    return jsonResponse<T>(fetch(url, withType(init, 'application/json')), errorMessage, errorData)
 }
 
 export function fetchText(
@@ -27,7 +27,7 @@ export function fetchText(
     errorMessage: string,
     errorData?: { [key: string]: unknown },
 ) {
-    return textResponse(fetch(url, init), errorMessage, errorData)
+    return textResponse(fetch(url, withType(init, 'text/*')), errorMessage, errorData)
 }
 
 export async function okResponse(
@@ -89,6 +89,19 @@ export async function throwOnNotOK<
 
 export function missing(what?: string): never {
     throw new Error(what ? `Missing ${what}.` : 'Missing.')
+}
+
+function withType(init: nf.RequestInit | undefined, mimeType: string) {
+    if ((init?.headers as { accept?: string } | undefined)?.accept) {
+        return init
+    }
+    return {
+        ...init,
+        headers: {
+            ...init?.headers,
+            accept: mimeType,
+        },
+    }
 }
 
 function limitSize(text: string | undefined) {
