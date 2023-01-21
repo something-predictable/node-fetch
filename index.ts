@@ -41,7 +41,7 @@ export async function okResponse(
     errorData?: { [key: string]: unknown },
 ) {
     const r = await throwOnNotOK(response, errorMessage, errorData)
-    await (r.arrayBuffer ?? r.text)()
+    await (r.arrayBuffer ?? r.text).bind(r)()
 }
 
 export async function jsonResponse<T>(
