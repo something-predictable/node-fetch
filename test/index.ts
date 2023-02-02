@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { createServer } from 'node:http'
-import { fetchOK, fetchText } from '../index.js'
+import { fetchOK, fetchText, thrownHasStatus } from '../index.js'
 
 describe('fetch', () => {
     let server: Awaited<ReturnType<typeof mock>>
@@ -40,7 +40,10 @@ describe('fetch', () => {
     })
 
     it('json throws', async () => {
-        await assert.rejects(() => fetchOK(`${server.baseUrl}fetchText`, {}, 'text rejected'))
+        await assert.rejects(
+            () => fetchOK(`${server.baseUrl}fetchText`, {}, 'text rejected'),
+            e => thrownHasStatus(e, 404),
+        )
     })
 })
 

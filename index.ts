@@ -87,6 +87,10 @@ export async function throwOnNotOK<
     return response
 }
 
+export function thrownHasStatus(e: unknown, status: number) {
+    return (e as { response?: { status?: number } } | undefined)?.response?.status === status
+}
+
 export function missing(what?: string): never {
     throw new Error(what ? `Missing ${what}.` : 'Missing.')
 }
