@@ -1,6 +1,14 @@
 import assert from 'node:assert/strict'
 import { createServer } from 'node:http'
+import { Agent } from 'node:https'
 import { fetchOK, fetchText, thrownHasStatus } from '../index.js'
+
+const init: RequestInit = {
+    keepalive: false,
+    dispatcher: new Agent({
+        keepAlive: false,
+    }) as any,
+}
 
 describe('fetch', () => {
     let server: Awaited<ReturnType<typeof mock>>
@@ -16,32 +24,34 @@ describe('fetch', () => {
 
     it('ok succeeds', async () => {
         server.setup('GET', 'ok', '', () => ({ status: 200 }))
-        await fetchOK(`${server.baseUrl}ok`, {}, 'ok did not succeed')
+        await fetchOK(`${server.baseUrl}ok`, init, 'ok did not succeed')
     })
 
     it('ok throws', async () => {
-        await assert.rejects(() => fetchOK(`${server.baseUrl}fail`, {}, 'ok failed'))
+        await assert.rejects(() =>
+            fetchOK(`${server.baseUrl}fail`, { keepalive: false }, 'ok failed'),
+        )
     })
 
     it('text succeeds', async () => {
         server.setup('GET', 'ok', '', () => ({ status: 200, body: 'hello 💮' }))
-        const text = await fetchText(`${server.baseUrl}ok`, {}, 'text did not succeed')
+        const text = await fetchText(`${server.baseUrl}ok`, init, 'text did not succeed')
         assert.strictEqual(text, 'hello 💮')
     })
 
     it('text throws', async () => {
-        await assert.rejects(() => fetchOK(`${server.baseUrl}fetchText`, {}, 'text rejected'))
+        await assert.rejects(() => fetchOK(`${server.baseUrl}fetchText`, init, 'text rejected'))
     })
 
     it('json succeeds', async () => {
         server.setup('GET', 'ok', '', () => ({ status: 200, body: 'hello 💮' }))
-        const text = await fetchText(`${server.baseUrl}ok`, {}, 'text did not succeed')
+        const text = await fetchText(`${server.baseUrl}ok`, init, 'text did not succeed')
         assert.strictEqual(text, 'hello 💮')
     })
 
     it('json throws', async () => {
         await assert.rejects(
-            () => fetchOK(`${server.baseUrl}fetchText`, {}, 'text rejected'),
+            () => fetchOK(`${server.baseUrl}fetchText`, init, 'text rejected'),
             e => thrownHasStatus(e, 404),
         )
     })

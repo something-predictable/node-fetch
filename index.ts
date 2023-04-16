@@ -1,11 +1,30 @@
-import * as nf from 'node-fetch'
+import * as undici from './lib/undici/fetch.js'
+import * as formData from './lib/undici/formData.js'
 
-export const fetch = nf.default
-export type Response = nf.Response
+declare global {
+    export const { FormData }: typeof import('./lib/undici/formData.js')
+    export const { fetch, Headers, Request, Response }: typeof import('./lib/undici/fetch.js')
+
+    type FormData = formData.FormData
+    type Headers = undici.Headers
+    type HeadersInit = undici.HeadersInit
+    type BodyInit = undici.BodyInit
+    type Request = undici.Request
+    type RequestInit = undici.RequestInit
+    type RequestInfo = undici.RequestInfo
+    type RequestMode = undici.RequestMode
+    type RequestRedirect = undici.RequestRedirect
+    type RequestCredentials = undici.RequestCredentials
+    type RequestDestination = undici.RequestDestination
+    type ReferrerPolicy = undici.ReferrerPolicy
+    type Response = undici.Response
+    type ResponseInit = undici.ResponseInit
+    type ResponseType = undici.ResponseType
+}
 
 export async function fetchOK(
     url: string,
-    init: nf.RequestInit | undefined,
+    init: RequestInit | undefined,
     errorMessage: string,
     errorData?: { [key: string]: unknown },
 ) {
@@ -14,7 +33,7 @@ export async function fetchOK(
 
 export function fetchJson<T>(
     url: string,
-    init: nf.RequestInit | undefined,
+    init: RequestInit | undefined,
     errorMessage: string,
     errorData?: { [key: string]: unknown },
 ) {
@@ -23,7 +42,7 @@ export function fetchJson<T>(
 
 export function fetchText(
     url: string,
-    init: nf.RequestInit | undefined,
+    init: RequestInit | undefined,
     errorMessage: string,
     errorData?: { [key: string]: unknown },
 ) {
@@ -95,7 +114,7 @@ export function missing(what?: string): never {
     throw new Error(what ? `Missing ${what}.` : 'Missing.')
 }
 
-function withType(init: nf.RequestInit | undefined, mimeType: string) {
+function withType(init: RequestInit | undefined, mimeType: string) {
     if ((init?.headers as { accept?: string } | undefined)?.accept) {
         return init
     }
