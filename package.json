@@ -1,10 +1,10 @@
 {
   "name": "@riddance/fetch",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "type": "module",
   "license": "MIT",
   "engines": {
-    "node": ">=16"
+    "node": ">=18"
   },
   "files": [
     "*.js",
@@ -20,9 +20,9 @@
     "postpublish": "riddance-sync"
   },
   "dependencies": {
-    "node-fetch": "3.3.0"
+    "node-fetch": "3.3.1"
   },
   "devDependencies": {
-    "@riddance/env": "0.2.9"
+    "@riddance/env": "0.3.0"
   }
 }
