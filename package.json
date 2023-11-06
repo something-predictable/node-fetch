@@ -1,6 +1,6 @@
 {
   "name": "@riddance/fetch",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "type": "module",
   "license": "MIT",
   "engines": {
@@ -20,9 +20,9 @@
     "postpublish": "riddance-sync"
   },
   "dependencies": {
-    "node-fetch": "3.3.1"
+    "node-fetch": "3.3.2"
   },
   "devDependencies": {
-    "@riddance/env": "0.3.0"
+    "@riddance/env": "0.4.3"
   }
 }
