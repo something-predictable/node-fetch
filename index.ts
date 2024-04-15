@@ -1,11 +1,6 @@
-import * as nf from 'node-fetch'
-
-export const fetch = nf.default
-export type Response = nf.Response
-
 export async function fetchOK(
     url: string,
-    init: nf.RequestInit | undefined,
+    init: RequestInit | undefined,
     errorMessage: string,
     errorData?: { [key: string]: unknown },
 ) {
@@ -14,7 +9,7 @@ export async function fetchOK(
 
 export function fetchJson<T>(
     url: string,
-    init: nf.RequestInit | undefined,
+    init: RequestInit | undefined,
     errorMessage: string,
     errorData?: { [key: string]: unknown },
 ) {
@@ -23,7 +18,7 @@ export function fetchJson<T>(
 
 export function fetchText(
     url: string,
-    init: nf.RequestInit | undefined,
+    init: RequestInit | undefined,
     errorMessage: string,
     errorData?: { [key: string]: unknown },
 ) {
@@ -95,7 +90,7 @@ export function missing(what?: string): never {
     throw new Error(what ? `Missing ${what}.` : 'Missing.')
 }
 
-function withType(init: nf.RequestInit | undefined, mimeType: string) {
+function withType(init: RequestInit | undefined, mimeType: string) {
     if ((init?.headers as { accept?: string } | undefined)?.accept) {
         return init
     }
