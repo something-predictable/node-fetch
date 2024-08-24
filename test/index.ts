@@ -48,7 +48,7 @@ describe('fetch', () => {
 })
 
 async function mock() {
-    const port = 12000 + Math.floor(Math.random() * 53000)
+    const port = 12_000 + Math.floor(Math.random() * 53_000)
     const responses: {
         method: string
         url: string
@@ -64,14 +64,9 @@ async function mock() {
                     str += chunk
                 })
                 request.on('end', () => {
-                    const match = responses
-                        .filter(
-                            r =>
-                                r.method === request.method &&
-                                r.url === request.url &&
-                                r.body === str,
-                        )
-                        .at(-1)
+                    const match = responses.findLast(
+                        r => r.method === request.method && r.url === request.url && r.body === str,
+                    )
                     if (!match) {
                         response.statusCode = 404
                         response.end()
@@ -84,10 +79,12 @@ async function mock() {
                     }
                     response.end()
                 })
-            } catch (ex) {
+            } catch {
                 response.statusCode = 500
             }
-        }).listen(port, '127.0.0.1', () => resolve(s))
+        }).listen(port, '127.0.0.1', () => {
+            resolve(s)
+        })
     })
     return {
         baseUrl: `http://127.0.0.1:${port}/`,

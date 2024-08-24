@@ -105,7 +105,7 @@ function withType(init: RequestInit | undefined, mimeType: string) {
 
 function limitSize(text: string | undefined) {
     if ((text?.length ?? 0) > 2048) {
-        return text?.substring(0, 2048)
+        return text?.slice(0, 2048)
     }
     return text
 }
