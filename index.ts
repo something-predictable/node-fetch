@@ -4,7 +4,7 @@ export async function fetchOK(
     errorMessage: string,
     errorData?: { [key: string]: unknown },
 ) {
-    await okResponse(fetch(url, withServerSideHeaders(init)), errorMessage, errorData)
+    await okResponse(fetch(url, withoutBrowserHeaders(init)), errorMessage, errorData)
 }
 
 export function fetchJson<T>(
@@ -90,16 +90,9 @@ export function missing(what?: string): never {
     throw new Error(what ? `Missing ${what}.` : 'Missing.')
 }
 
-function withServerSideHeaders(init: RequestInit | undefined) {
-    return {
-        ...init,
-        dispatcher: fetchAgent,
-    } as unknown as RequestInit
-}
-
 function withType(init: RequestInit | undefined, mimeType: string) {
     if ((init?.headers as { accept?: string } | undefined)?.accept) {
-        return withServerSideHeaders(init)
+        return withoutBrowserHeaders(init)
     }
     return {
         ...init,
@@ -111,9 +104,19 @@ function withType(init: RequestInit | undefined, mimeType: string) {
     } as unknown as RequestInit
 }
 
+function withoutBrowserHeaders(init: RequestInit | undefined) {
+    return {
+        ...init,
+        dispatcher: fetchAgent,
+    } as unknown as RequestInit
+}
+
 function limitSize(text: string | undefined) {
-    if ((text?.length ?? 0) > 2048) {
-        return text?.slice(0, 2048)
+    if (!text) {
+        return text
+    }
+    if (text.length > 2048) {
+        return text.slice(0, 2048 - 129) + '…' + text.slice(-128)
     }
     return text
 }
