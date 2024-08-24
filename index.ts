@@ -4,7 +4,7 @@ export async function fetchOK(
     errorMessage: string,
     errorData?: { [key: string]: unknown },
 ) {
-    await okResponse(fetch(url, init), errorMessage, errorData)
+    await okResponse(fetch(url, withServerSideHeaders(init)), errorMessage, errorData)
 }
 
 export function fetchJson<T>(
@@ -90,9 +90,16 @@ export function missing(what?: string): never {
     throw new Error(what ? `Missing ${what}.` : 'Missing.')
 }
 
+function withServerSideHeaders(init: RequestInit | undefined) {
+    return {
+        ...init,
+        dispatcher: fetchAgent,
+    } as unknown as RequestInit
+}
+
 function withType(init: RequestInit | undefined, mimeType: string) {
     if ((init?.headers as { accept?: string } | undefined)?.accept) {
-        return init
+        return withServerSideHeaders(init)
     }
     return {
         ...init,
@@ -100,7 +107,8 @@ function withType(init: RequestInit | undefined, mimeType: string) {
             ...init?.headers,
             accept: mimeType,
         },
-    }
+        dispatcher: fetchAgent,
+    } as unknown as RequestInit
 }
 
 function limitSize(text: string | undefined) {
@@ -109,3 +117,16 @@ function limitSize(text: string | undefined) {
     }
     return text
 }
+
+// spell-checker: ignore undici
+// eslint-disable-next-line no-void, promise/valid-params, unicorn/prefer-top-level-await
+void fetch('').catch()
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
+class FetchAgent extends (global as any)[Symbol.for('undici.globalDispatcher.1')].constructor {
+    dispatch(opts: { headers: { [x: string]: unknown } }, handler: unknown) {
+        delete opts.headers['sec-fetch-mode']
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+        return super.dispatch(opts, handler)
+    }
+}
+const fetchAgent = new FetchAgent()

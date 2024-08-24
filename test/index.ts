@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { createServer } from 'node:http'
+import { createServer, type IncomingMessage } from 'node:http'
 import { fetchOK, fetchText, thrownHasStatus } from '../index.js'
 
 describe('fetch', () => {
@@ -16,6 +16,11 @@ describe('fetch', () => {
 
     it('ok succeeds', async () => {
         server.setup('GET', 'ok', '', () => ({ status: 200 }))
+        await fetchOK(`${server.baseUrl}ok`, {}, 'ok did not succeed')
+    })
+
+    it('does not include sec-fetch-mode header', async () => {
+        server.setup('GET', 'ok', '', m => ({ status: m.headers['sec-fetch-mode'] ? 500 : 200 }))
         await fetchOK(`${server.baseUrl}ok`, {}, 'ok did not succeed')
     })
 
@@ -53,7 +58,7 @@ async function mock() {
         method: string
         url: string
         body: string
-        response: () => { status: number; body?: string }
+        response: (message: IncomingMessage) => { status: number; body?: string }
     }[] = []
     const server = await new Promise<ReturnType<typeof createServer>>(resolve => {
         const s = createServer((request, response) => {
@@ -72,7 +77,7 @@ async function mock() {
                         response.end()
                         return
                     }
-                    const r = match.response()
+                    const r = match.response(request)
                     response.statusCode = r.status
                     if (r.body) {
                         response.write(r.body)
@@ -92,7 +97,7 @@ async function mock() {
             method: string,
             url: string,
             body: string,
-            response: () => { status: number; body?: string },
+            response: (message: IncomingMessage) => { status: number; body?: string },
         ) => responses.push({ method, url: '/' + url, body, response }),
         clear: () => {
             responses.splice(0)
