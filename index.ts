@@ -122,8 +122,8 @@ function limitSize(text: string | undefined) {
 }
 
 // spell-checker: ignore undici
-// eslint-disable-next-line no-void, promise/valid-params, unicorn/prefer-top-level-await
-void fetch('').catch()
+// eslint-disable-next-line no-void, unicorn/prefer-top-level-await, @typescript-eslint/no-empty-function
+void fetch('').catch(() => {})
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
 class FetchAgent extends (global as any)[Symbol.for('undici.globalDispatcher.1')].constructor {
     dispatch(opts: { headers: { [x: string]: unknown } }, handler: unknown) {
