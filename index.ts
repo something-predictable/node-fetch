@@ -91,13 +91,32 @@ export function missing(what?: string): never {
 }
 
 function withType(init: RequestInit | undefined, mimeType: string) {
-    if ((init?.headers as { accept?: string } | undefined)?.accept) {
+    const headers = init?.headers
+    if (!headers) {
+        return {
+            ...init,
+            headers: {
+                accept: mimeType,
+            },
+            dispatcher: fetchAgent,
+        } as unknown as RequestInit
+    }
+    if ((headers as { accept?: string }).accept) {
         return withoutBrowserHeaders(init)
+    }
+    if (Array.isArray(headers)) {
+        return withType(
+            { ...init, headers: Object.fromEntries(headers as [string, string][]) },
+            mimeType,
+        )
+    }
+    if (headers instanceof Headers) {
+        return withType({ ...init, headers: Object.fromEntries(headers.entries()) }, mimeType)
     }
     return {
         ...init,
         headers: {
-            ...init?.headers,
+            ...headers,
             accept: mimeType,
         },
         dispatcher: fetchAgent,
