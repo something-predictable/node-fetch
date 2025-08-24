@@ -125,7 +125,7 @@ function limitSize(text: string | undefined) {
 // eslint-disable-next-line no-void, unicorn/prefer-top-level-await, @typescript-eslint/no-empty-function
 void fetch('').catch(() => {})
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
-class FetchAgent extends (global as any)[Symbol.for('undici.globalDispatcher.1')].constructor {
+class FetchAgent extends (globalThis as any)[Symbol.for('undici.globalDispatcher.1')].constructor {
     dispatch(opts: { headers: { [x: string]: unknown } }, handler: unknown) {
         delete opts.headers['sec-fetch-mode']
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
