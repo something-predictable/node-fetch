@@ -8,10 +8,14 @@
   },
   "files": [
     "*.js",
-    "*.d.ts"
+    "*.d.ts",
+    "instructions.md"
   ],
   "exports": {
     ".": "./index.js"
+  },
+  "ai": {
+    "instructions": "./instructions.md"
   },
   "scripts": {
     "start": "riddance-watch",
@@ -20,6 +24,6 @@
     "postpublish": "riddance-sync"
   },
   "devDependencies": {
-    "@riddance/env": "0.9.0"
+    "@riddance/env": "0.9.1"
   }
 }
