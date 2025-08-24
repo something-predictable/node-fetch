@@ -67,12 +67,13 @@ export async function textResponse(
 }
 
 export async function throwOnNotOK<
-    T extends { ok?: boolean; status?: number; text?: () => Promise<string> },
+    T extends { ok?: boolean; status?: number; url?: string; text?: () => Promise<string> },
 >(response: Promise<T> | T, message: string, data?: { [key: string]: unknown }) {
     const r = await response
     if (r.ok === false) {
         throw Object.assign(new Error(message), {
             response: {
+                url: r.url,
                 status: r.status,
                 body: limitSize(await r.text?.()),
             },
